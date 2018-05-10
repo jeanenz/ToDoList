@@ -1,0 +1,15 @@
+<% include ./partials/header %>
+<div id="container">
+	<h1>To-Do List </h1>
+
+	<ul>
+		<% todos.forEach(function(todo){ %>
+			<li><span class="show"><i class="fas fa-trash-alt"></i></span> 
+			<%= todo.item %> 
+			<a href="/todos/<%= todo.id %>"><span class="show view"><i class="fas fa-eye"></i></span></a></li>
+		<% }) %>
+
+	</ul>
+
+</div>
+<% include ./partials/footer %>

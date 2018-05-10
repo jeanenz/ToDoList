@@ -1,0 +1,23 @@
+<% include ./partials/header %>
+
+<div class="ui main text container segment">
+    <div class="ui huge header">Edit Todo</div>
+    <div class="ui top attached">
+        <div class="item">
+            <div class="content">
+                <span>Created: <%= todo.created.toDateString() %></span>
+            </div>
+            <div class="description">
+                <p>Item: <%= todo.item %></p>
+                <p>Category: <%= todo.category %></p>
+            </div>
+            <a class="ui orange basic button" href="/todos/<%= todo._id %>/edit">Edit</a>
+            <form id="delete" action="/todos/<%= todo._id %>?_method=DELETE" method="POST">
+                <button class="ui red basic button">Delete</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<% include ./partials/footer %>
