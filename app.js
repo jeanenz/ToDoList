@@ -2,7 +2,10 @@ var express = require("express"),
     methodOverride = require("method-override"),
     app = express(),
     bodyParser = require("body-parser"),
-    mongoose = require("mongoose");
+    mongoose = require("mongoose"),
+    passport = require("passport"),
+    LocalStrategy = require("passport-local"),
+    User = require("./models/user");
 
 //App config
 mongoose.connect("mongodb://localhost/todo_app");
@@ -18,6 +21,19 @@ var todoSchema = new mongoose.Schema({
     created: {type: Date, default: Date.now}
 });
 var Todo = mongoose.model("Todo", todoSchema);
+
+// Passport configuration
+app.use(require("express-session")({
+    secret: "Oscar and Bravo are both napping today",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 
 // Route for today's todos
 app.get("/", function(req, res){
@@ -102,6 +118,46 @@ app.delete("/todos/:id", function(req, res){
             res.redirect("/todos");
         }
     });
+});
+
+// Auth routes
+
+// Show register form
+app.get("/register", function(req, res) {
+    res.render("register");
+});
+
+//Handle sign up logic
+app.post("/register", function(req, res){
+    var newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password, function(err, user){
+        if(err){
+            console.log(err);
+            return res.render("register");
+        } else {
+            passport.authenticate("local")(req, res, function(){
+                res.redirect("/todos");
+            });
+        }
+    });
+});
+
+// Show login form
+app.get("/login", function(req, res) {
+    res.render("login");
+});
+
+// Handling login logic
+app.post("/login", passport.authenticate("local",{
+    successRedirect: "/",
+    failureRedirect: "/login"
+}), function(req, res){
+});
+
+// Logout route
+app.get("/logout", function(req, res) {
+    req.logout();
+    res.redirect("/");
 });
 
 app.listen(process.env.PORT, process.env.IP, function(){
