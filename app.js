@@ -60,12 +60,12 @@ app.get("/todos", function(req, res){
 });
 
 //New route
-app.get("/todos/new", function(req, res){
+app.get("/todos/new", isLoggedIn, function(req, res){
     res.render("new");
 });
 
 //Create route
-app.post("/", function(req, res){
+app.post("/", isLoggedIn, function(req, res){
     console.log (req.body.todo);
     Todo.create(req.body.todo, function(err, newlyCreated){
         if(err){
@@ -159,6 +159,13 @@ app.get("/logout", function(req, res) {
     req.logout();
     res.redirect("/");
 });
+
+// Middleware
+function isLoggedIn(req,res,next){
+    if(req.isAuthenticated()){
+        return next();
+    } res.redirect("/login");
+}
 
 app.listen(process.env.PORT, process.env.IP, function(){
     console.log("Your to do list is listening");
