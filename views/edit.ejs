@@ -11,6 +11,25 @@
             <label>Category</label>
             <input type="text" name="todo[category]" placeholder="category" value="<%= todo.category %>">
         </div>
+                <div class="inline fields">
+            <label>Repeat Todo?</label>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="todo[repeat]" value="<%= todo.repeat %>" id="repeatY">
+                    <label for="repeatY">Yes</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="todo[repeat" value="<%= todo.repeat %>" id="repeatN" checked="checked">
+                    <label for="repeatN">No</label>
+                </div>
+            </div>
+        </div>
+        <div class="inline fields">
+            <label>Frequency</label>
+            Every <input type="number" name="todo[frequency]" placeholder="frequency" value="<%= todo.frequency %>"> Days
+        </div>
         <input class="ui big inverted purple button" type="submit">
     </form>
 </div>
