@@ -5,7 +5,7 @@ var Todo = require("../models/todo");
 //RESTful routes
 
 //Index route
-router.get("/todos", function(req, res){
+router.get("/todos", isLoggedIn, function(req, res){
     Todo.find({}, function(err, allTodos){
         if(err){
             console.log(err);
@@ -21,11 +21,18 @@ router.get("/todos/new", isLoggedIn, function(req, res){
 });
 
 //Create route
-router.post("/", isLoggedIn, function(req, res){
-    console.log (req.body.todo);
-    Todo.create(req.body.todo, function(err, newlyCreated){
+router.post("/", function(req, res){
+    // Get user info to add to todo
+    var author = {
+        id: req.user._id,
+        username: req.user.username
+    };
+    var newTodo = req.body.todo;
+    newTodo.author = author;
+    console.log (newTodo);
+    Todo.create(newTodo, function(err, newlyCreated){
         if(err){
-            console.log(err);
+            console.log("This is an error message:" + err);
         } else {
             res.redirect("/");
         }
@@ -33,7 +40,7 @@ router.post("/", isLoggedIn, function(req, res){
 });
 
 // Show route
-router.get("/todos/:id", function(req, res) {
+router.get("/todos/:id", isLoggedIn, function(req, res) {
     Todo.findById(req.params.id, function(err, foundTodo){
         if(err){
             console.log(err);
@@ -44,18 +51,18 @@ router.get("/todos/:id", function(req, res) {
 });
 
 // Edit route
-router.get("/todos/:id/edit", function(req, res){
+router.get("/todos/:id/edit", checkTodoOwnership, function(req, res){
     Todo.findById(req.params.id, function(err, foundTodo){
         if(err){
             console.log(err);
-        } else{
-            res.render("edit", {todo: foundTodo});
         }
+        res.render("edit", {todo: foundTodo});        
     });
 });
 
+
 //Update route
-router.put("/todos/:id", function(req, res){
+router.put("/todos/:id", isLoggedIn, function(req, res){
     Todo.findByIdAndUpdate(req.params.id, req.body.todo, function(err, updatedTodo){
         if(err){
             console.log(err);
@@ -66,7 +73,7 @@ router.put("/todos/:id", function(req, res){
 });
 
 // Destroy route
-router.delete("/todos/:id", function(req, res){
+router.delete("/todos/:id", isLoggedIn, function(req, res){
     Todo.findByIdAndRemove(req.params.id, function(err){
         if(err){
             console.log(err);
@@ -81,6 +88,25 @@ function isLoggedIn(req,res,next){
     if(req.isAuthenticated()){
         return next();
     } res.redirect("/login");
+}
+
+function checkTodoOwnership(req, res, next){
+    if(req.isAuthenticated()){
+        Todo.findById(req.params.id, function(err, foundTodo){
+            if(err){
+                res.redirect("back");
+            } else{
+                // Is this the user's todo?
+                if(foundTodo.author.id.equals(req.user._id)){
+                    next();
+                } else {
+                    res.redirect("back");
+                }
+            }
+        });
+    } else {
+        res.redirect("back");
+    }
 }
 
 module.exports = router;

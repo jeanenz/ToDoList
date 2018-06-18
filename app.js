@@ -1,12 +1,12 @@
 var express = require("express"),
-    methodOverride = require("method-override"),
     app = express(),
     bodyParser = require("body-parser"),
     mongoose = require("mongoose"),
     passport = require("passport"),
     LocalStrategy = require("passport-local"),
-    User = require("./models/user"),
-    Todo = require("./models/todo");
+    methodOverride = require("method-override"),
+    Todo = require("./models/todo"),
+    User = require("./models/user");
 
 var todoRoutes = require("./routes/todos"),
     indexRoutes = require("./routes/index");
@@ -14,8 +14,8 @@ var todoRoutes = require("./routes/todos"),
 //App config
 mongoose.connect("mongodb://localhost/todo_app");
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static("public"));
 app.set("view engine", "ejs");
+app.use(express.static("public"));
 app.use(methodOverride("_method"));
 
 // Passport configuration

@@ -6,7 +6,9 @@
 	</form>
 	<ul>
 		<% todos.forEach(function(todo){ %>
-			<li><span><i class="fas fa-trash-alt"></i></span> <%= todo.item %></li>
+			<% if(currentUser && todo.author.id.equals(currentUser._id)){ %>
+				<li><span><i class="fas fa-trash-alt"></i></span> <%= todo.item %></li>
+			<% } %>
 		<% }) %>
 
 	</ul>

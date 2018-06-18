@@ -4,9 +4,11 @@
 
 	<ul>
 		<% todos.forEach(function(todo){ %>
+			<% if(currentUser && todo.author.id.equals(currentUser._id)){ %>
 			<li><span class="show"><i class="fas fa-trash-alt"></i></span> 
 			<%= todo.item %> 
 			<a href="/todos/<%= todo.id %>"><span class="show view"><i class="fas fa-eye"></i></span></a></li>
+			<% } %>
 		<% }) %>
 
 	</ul>
